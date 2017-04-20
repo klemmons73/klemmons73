@@ -37,3 +37,8 @@ CONFIG += sailfishapp_i18n
 # following TRANSLATIONS line. And also do not forget to
 # modify the localized app name in the the .desktop file.
 TRANSLATIONS += translations/maze_runner-de.ts
+
+DISTFILES += \
+    qml/pages/Brick.qml \
+    qml/pages/bricks.png \
+    qml/pages/BrickManager.qml
