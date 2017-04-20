@@ -41,4 +41,6 @@ TRANSLATIONS += translations/maze_runner-de.ts
 DISTFILES += \
     qml/pages/Brick.qml \
     qml/pages/bricks.png \
-    qml/pages/BrickManager.qml
+    qml/pages/BrickManager.qml \
+    qml/pages/Ball.qml \
+    qml/pages/ball.png

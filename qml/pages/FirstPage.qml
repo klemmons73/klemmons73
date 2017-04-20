@@ -45,7 +45,7 @@ Page {
 
             z: -1
         }
-
+/*
         BrickManager {
             id: brickManager
 
@@ -54,6 +54,15 @@ Page {
             Component.onCompleted: {
                 generateWalls()
             }
+        }
+*/
+        Ball {
+            id: ball
+
+            x: parent.width / 2
+            y: parent.height / 2
+
+            focus: true
         }
 
     }
