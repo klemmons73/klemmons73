@@ -16,6 +16,8 @@ Item {
     property bool upPressed: false
     property bool downPressed: false
 
+    property var bricks: null
+
     Image {
         source: "ball.png"
 
@@ -68,7 +70,7 @@ Item {
 
 
     Timer {
-        interval: 20
+        interval: 30
         triggeredOnStart: true
         running: true
         repeat: true
@@ -76,17 +78,27 @@ Item {
         onTriggered: {
             speedUpdate()
 
-            b.x += xVelocity
-            b.y += yVelocity
+            if(bricks.getCollision(b.x, b.y, b.x+xVelocity, b.y+yVelocity, diametr)) {
+                b.x = bricks.new_x
+                b.y = bricks.new_y
+                xVelocity = bricks.new_vx
+                yVelocity = bricks.new_vy
+                //console.log(xVelocity, yVelocity)
+                //console.log("collision", bricks.new_x, bricks.new_y, bricks.new_vx, bricks.new_vy)
+            }
+            else {
+                b.x += xVelocity
+                b.y += yVelocity
+            }
         }
 
     }
 
     function speedUpdate() {
-        if(rightPressed) { xVelocity = Math.max(xVelocity+acceleration, speedLimit) }
-        if(leftPressed) { xVelocity = Math.min(xVelocity-acceleration, -speedLimit) }
-        if(upPressed) { yVelocity = Math.min(yVelocity-acceleration, -speedLimit) }
-        if(downPressed) { yVelocity = Math.max(yVelocity+acceleration, speedLimit) }
+        if(rightPressed && xVelocity >= 0) { xVelocity = Math.max(xVelocity+acceleration, speedLimit) }
+        if(leftPressed && xVelocity <= 0) { xVelocity = Math.min(xVelocity-acceleration, -speedLimit) }
+        if(upPressed && yVelocity <= 0) { yVelocity = Math.min(yVelocity-acceleration, -speedLimit) }
+        if(downPressed && yVelocity >= 0) { yVelocity = Math.max(yVelocity+acceleration, speedLimit) }
 
         if(!rightPressed && !leftPressed && (xVelocity != 0)) {
             if(xVelocity < 0)

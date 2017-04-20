@@ -45,7 +45,7 @@ Page {
 
             z: -1
         }
-/*
+
         BrickManager {
             id: brickManager
 
@@ -55,9 +55,11 @@ Page {
                 generateWalls()
             }
         }
-*/
+
         Ball {
             id: ball
+
+            bricks: brickManager
 
             x: parent.width / 2
             y: parent.height / 2
