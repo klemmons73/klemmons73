@@ -17,9 +17,11 @@ Item {
     property int new_vx: 0
     property int new_vy: 0
 
-    //property var walls: []
+    property var steps: [[-1,0],[0,-1],[1,0],[0,1],[-1,-1],[1,-1],[1,1],[-1,1]]
+
 
     property var bricks: []
+    property var holls:  []
 
     function generateWalls() {
 
@@ -27,11 +29,7 @@ Item {
         verticalBricks = Math.floor(parent.height / brickSize)
 
         for(var i = 0; i < verticalBricks; i++) {          // row
-            bricks[i] = []
-            /*
-            for(var j = 0; j < horizontalBricks; j++) {    // col
-                bricks[i][j] = null
-            }*/
+            bricks[i] = []            
         }
 
         var component = Qt.createComponent("Brick.qml")
@@ -51,6 +49,39 @@ Item {
         }
     }
 
+    function addHolls(amount) {
+        while(amount > 0) {
+            while(true) {
+                var col = Math.floor(Math.random() * horizontalBricks)
+                var row = Math.floor(Math.random() * verticalBricks)
+                var brick = bricks[row][col]
+
+                if(brick && brick.type == 1) {
+                    brick.setType(2)
+                    holls.push(brick)
+                    break;
+                }
+            }
+            amount--
+        }
+    }
+
+    function addSprings(amount) {
+        while(amount > 0) {
+            while(true) {
+                var col = Math.floor(Math.random() * horizontalBricks)
+                var row = Math.floor(Math.random() * verticalBricks)
+                var brick = bricks[row][col]
+
+                if(brick && brick.type == 1) {
+                    brick.setType(3)
+                    break;
+                }
+            }
+            amount--
+        }
+    }
+
     function getCollision(x0,y0,x1,y1, diam) {
 
         var b_row = Math.floor((y0+diam/2) / brickSize)
@@ -64,9 +95,19 @@ Item {
         var dent_hor = 0
         var dent_ver = 0
 
-        for(var i = -1; i <= 1; i++) {
-            for(var j = -1; j <= 1; j++) {
-                var brick = bricks[b_row+i][b_col+j]
+        var get_spring = false
+        var obj_holl
+
+        //for(var i = b_row-1; i <= b_row+1; i++) {
+            //for(var j = b_col-1; j <=b_col+1; j++) {
+            for(var k = 0; k < steps.length; k++) {
+                var i = b_row + steps[k][0]
+                var j = b_col + steps[k][1]
+
+                if(i < 0 || i >= verticalBricks || j < 0 || j >= horizontalBricks)
+                    continue;
+
+                var brick = bricks[i][j]
                 if(brick) {
                     var left = Math.min(b_l, brick.x);
                     var right = Math.max(b_r, brick.x+brick.width);
@@ -79,15 +120,29 @@ Item {
                     if(diff_h < limit && diff_v < limit) {
                         dent_hor += diff_h;
                         dent_ver += diff_v;
+
+                        if(brick.type == 3) {
+                            get_spring = (diff_h + 0.3*brick.width < 0 || diff_v + 0.3*brick.height < 0)
+                        }
+
+                        if(brick.type == 2) {
+                            if(diff_h + 0.3*brick.width < 0 || diff_v + 0.3*brick.height < 0)
+                            { obj_holl = brick }
+                        }
                     }
                 }
             }
-        }
+        //}
 
         if(dent_hor==0 && dent_ver==0) return false;
 
         var dx = x1-x0
         var dy = y1-y0
+
+        if(obj_holl) {
+            hollExit(obj_holl, dx, dy)
+            return true
+        }
 
         //console.log(dent_hor, dent_ver)
 
@@ -115,7 +170,54 @@ Item {
         if(new_vx != 0) { new_vx = (new_vx / Math.abs(new_vx)) * (Math.floor(Math.abs(new_vx)/1.5)) }
         if(new_vy != 0) { new_vy = (new_vy) / Math.abs(new_vy) * (Math.floor(Math.abs(new_vy)/1.5)) }
 
+        if(get_spring) {
+            new_vx *= 3
+            new_vy *= 3
+        }
+
         return true;
+    }
+
+    function hollExit(holl, dx, dy) {
+        var exit = holl
+
+        while(exit == holl) {
+            var n = Math.floor(Math.random() * holls.length)
+            exit = holls[n]
+            console.log(n)
+        }
+
+        var exit_x = Math.floor(exit.x + exit.width/2)
+        var exit_y = Math.floor(exit.y + exit.height/2)
+
+        var col = Math.floor(exit.x / exit.width)
+        var row = Math.floor(exit.y / exit.height)
+
+        console.log(col, row)
+
+        var i, j
+        for(var k = 0; k < steps.length; k++) {
+            i = col + steps[k][0]
+            j = row + steps[k][1]
+
+            if(!(i < 0 || i >= horizontalBricks || j < 0 || j >= verticalBricks || bricks[j][i])) break;
+        }
+
+
+        console.log(i,j)
+
+        var ball_x = Math.floor((i+0.5)*exit.width)
+        var ball_y = Math.floor((j+0.5)*exit.height)
+
+        var dv = Math.sqrt(dx*dx+dy*dy)
+        var hyp = Math.sqrt((exit_x-ball_x)*(exit_x-ball_x) + (exit_y-ball_y)*(exit_y-ball_y));
+
+        new_x = ball_x
+        new_y = ball_y
+        new_vx = Math.floor(dv*(ball_x-exit_x)/hyp)
+        new_vy = Math.floor(dv*(ball_y-exit_y)/hyp)
+
+        console.log(new_x, new_y, new_vx, new_vy)
 
     }
 

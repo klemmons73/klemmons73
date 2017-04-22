@@ -53,6 +53,8 @@ Page {
 
             Component.onCompleted: {
                 generateWalls()
+                addHolls(2)
+                addSprings(2)
             }
         }
 
