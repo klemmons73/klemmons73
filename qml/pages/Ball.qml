@@ -9,7 +9,7 @@ Item {
     property int yVelocity: 0
 
     property int acceleration: 1
-    property int speedLimit: 5
+    property int speedLimit: 20
 
     property bool leftPressed: false
     property bool rightPressed: false
@@ -70,7 +70,7 @@ Item {
 
 
     Timer {
-        interval: 30
+        interval: 40
         triggeredOnStart: true
         running: true
         repeat: true
@@ -95,10 +95,10 @@ Item {
     }
 
     function speedUpdate() {
-        if(rightPressed && xVelocity >= 0) { xVelocity = Math.max(xVelocity+acceleration, speedLimit) }
-        if(leftPressed && xVelocity <= 0) { xVelocity = Math.min(xVelocity-acceleration, -speedLimit) }
-        if(upPressed && yVelocity <= 0) { yVelocity = Math.min(yVelocity-acceleration, -speedLimit) }
-        if(downPressed && yVelocity >= 0) { yVelocity = Math.max(yVelocity+acceleration, speedLimit) }
+        if(rightPressed) { xVelocity = Math.min(xVelocity+acceleration, speedLimit) }
+        if(leftPressed) { xVelocity = Math.max(xVelocity-acceleration, -speedLimit) }
+        if(upPressed) { yVelocity = Math.max(yVelocity-acceleration, -speedLimit) }
+        if(downPressed) { yVelocity = Math.min(yVelocity+acceleration, speedLimit) }
 
         if(!rightPressed && !leftPressed && (xVelocity != 0)) {
             if(xVelocity < 0)

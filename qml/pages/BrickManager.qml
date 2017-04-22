@@ -89,7 +89,7 @@ Item {
         var dx = x1-x0
         var dy = y1-y0
 
-        console.log(dent_hor, dent_ver)
+        //console.log(dent_hor, dent_ver)
 
         if(dent_ver + diam == 0 || dent_ver < 2*dent_hor) {
             new_x = x0
@@ -111,6 +111,9 @@ Item {
             new_vy = -dy
             //console.log("combined")
         }
+
+        if(new_vx != 0) { new_vx = (new_vx / Math.abs(new_vx)) * (Math.floor(Math.abs(new_vx)/1.5)) }
+        if(new_vy != 0) { new_vy = (new_vy) / Math.abs(new_vy) * (Math.floor(Math.abs(new_vy)/1.5)) }
 
         return true;
 
