@@ -9,7 +9,7 @@ Item {
     property int row: 0
 
 
-    property var src: "bricks.png"
+    property string src: "bricks.png"
 
     width: size
     height: size
@@ -24,5 +24,21 @@ Item {
     function setCell(c, r) {
         col = c
         row = r
+    }
+
+    function setType(n) {
+        type = n
+        switch(n) {
+        case 2:
+            src = "hole.png"
+            break;
+        case 3:
+            src = "spring.png"
+            break;
+        default:
+            type = 1
+            src = "bricks.png"
+            break;
+        }
     }
 }

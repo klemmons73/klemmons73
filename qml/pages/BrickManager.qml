@@ -44,7 +44,7 @@ Item {
 
                     var brick = component.createObject(gameBoard, {"x":x, "y":y, "size": brickSize});
 
-                    //walls.push(brick)
+                    brick.setType(1)
                     bricks[row][col] = brick
                 }
             }

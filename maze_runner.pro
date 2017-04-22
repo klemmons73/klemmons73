@@ -43,4 +43,6 @@ DISTFILES += \
     qml/pages/bricks.png \
     qml/pages/BrickManager.qml \
     qml/pages/Ball.qml \
-    qml/pages/ball.png
+    qml/pages/ball.png \
+    qml/pages/hole.png \
+    qml/pages/spring.png
