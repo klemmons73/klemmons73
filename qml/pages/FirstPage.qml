@@ -35,6 +35,8 @@ import Sailfish.Silica 1.0
 Page {
     id: page
 
+    property int brickSize: 50
+
     Item {
         id: board
         anchors.fill: parent
@@ -50,10 +52,11 @@ Page {
             id: brickManager
 
             gameBoard: board
+            brickSize: page.brickSize
 
             Component.onCompleted: {
                 generateWalls()
-                addHolls(2)
+                addHolls(3)
                 addSprings(2)
             }
         }
@@ -62,6 +65,7 @@ Page {
             id: ball
 
             bricks: brickManager
+            diametr: Math.floor(0.8*page.brickSize)
 
             x: parent.width / 2
             y: parent.height / 2

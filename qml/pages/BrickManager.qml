@@ -7,6 +7,9 @@ Item {
 
     property int brickSize: 50
 
+    property int brickWidth: 50
+    property int brickHeight: 50
+
     property int horizontalBricks: 0
     property int verticalBricks: 0
 
@@ -23,24 +26,30 @@ Item {
     property var bricks: []
     property var holls:  []
 
+    // external walls and main parameters
     function generateWalls() {
-
+        // define number of bricks and its size
         horizontalBricks = Math.floor(parent.width / brickSize)
         verticalBricks = Math.floor(parent.height / brickSize)
 
+        brickWidth = Math.floor(parent.width / horizontalBricks)
+        brickHeight = Math.floor(parent.height / verticalBricks)
+
+        // represent bricks as a matrix
         for(var i = 0; i < verticalBricks; i++) {          // row
             bricks[i] = []            
         }
 
+        // setup borders
         var component = Qt.createComponent("Brick.qml")
 
         for(var col = 0; col < horizontalBricks; col++) {
             for(var row = 0; row < verticalBricks; row++) {
-                if((col==0) || (col==(horizontalBricks-1)) || (row==0) || (row==(verticalBricks-1)) /*|| ((col%2==0) && (row%2==0))*/) {
-                    var x = col*brickSize
-                    var y = row*brickSize
+                if((col==0) || (col==(horizontalBricks-1)) || (row==0) || (row==(verticalBricks-1))) {
+                    var x = col*brickWidth
+                    var y = row*brickHeight
 
-                    var brick = component.createObject(gameBoard, {"x":x, "y":y, "size": brickSize});
+                    var brick = component.createObject(gameBoard, {"x":x, "y":y, "width":brickWidth, "height":brickHeight});
 
                     brick.setType(1)
                     bricks[row][col] = brick
@@ -49,6 +58,7 @@ Item {
         }
     }
 
+    // black holls generation
     function addHolls(amount) {
         while(amount > 0) {
             while(true) {
@@ -58,7 +68,7 @@ Item {
 
                 if(brick && brick.type == 1) {
                     brick.setType(2)
-                    holls.push(brick)
+                    holls.push(brick) // list of all holls
                     break;
                 }
             }
@@ -66,6 +76,7 @@ Item {
         }
     }
 
+    // springs generation
     function addSprings(amount) {
         while(amount > 0) {
             while(true) {
@@ -82,10 +93,11 @@ Item {
         }
     }
 
+    // collision checking
     function getCollision(x0,y0,x1,y1, diam) {
 
-        var b_row = Math.floor((y0+diam/2) / brickSize)
-        var b_col = Math.floor((x0+diam/2) / brickSize)
+        var b_row = Math.floor((y0+diam/2) / brickHeight)
+        var b_col = Math.floor((x0+diam/2) / brickWidth)
 
         var b_l = x1
         var b_r = x1+diam
@@ -98,78 +110,83 @@ Item {
         var get_spring = false
         var obj_holl
 
-        //for(var i = b_row-1; i <= b_row+1; i++) {
-            //for(var j = b_col-1; j <=b_col+1; j++) {
-            for(var k = 0; k < steps.length; k++) {
-                var i = b_row + steps[k][0]
-                var j = b_col + steps[k][1]
+        for(var k = 0; k < steps.length; k++) {
+            var i = b_row + steps[k][0]
+            var j = b_col + steps[k][1]
 
-                if(i < 0 || i >= verticalBricks || j < 0 || j >= horizontalBricks)
-                    continue;
+            if(i < 0 || i >= verticalBricks || j < 0 || j >= horizontalBricks)  // check index
+                continue;
 
-                var brick = bricks[i][j]
-                if(brick) {
-                    var left = Math.min(b_l, brick.x);
-                    var right = Math.max(b_r, brick.x+brick.width);
-                    var top = Math.min(b_t, brick.y);
-                    var bottom = Math.max(b_b, brick.y+brick.height);
+            var brick = bricks[i][j]
+            if(brick) {
+                // external borders
+                var left = Math.min(b_l, brick.x);
+                var right = Math.max(b_r, brick.x+brick.width);
+                var top = Math.min(b_t, brick.y);
+                var bottom = Math.max(b_b, brick.y+brick.height);
 
-                    var diff_h = right - left - brick.width - diam
-                    var diff_v = bottom - top - brick.height - diam
+                // shift
+                var diff_h = right - left - brick.width - diam
+                var diff_v = bottom - top - brick.height - diam
 
-                    if(diff_h < limit && diff_v < limit) {
-                        dent_hor += diff_h;
-                        dent_ver += diff_v;
+                if(diff_h < limit && diff_v < limit) {
+                    // check direction of collision
+                    dent_hor += diff_h;
+                    dent_ver += diff_v;
 
-                        if(brick.type == 3) {
-                            get_spring = (diff_h + 0.3*brick.width < 0 || diff_v + 0.3*brick.height < 0)
-                        }
+                    // for spring
+                    if(brick.type == 3) {
+                        // mark if sufficient
+                        get_spring = (diff_h + 0.3*brick.width < 0 || diff_v + 0.3*brick.height < 0)
+                    }
 
-                        if(brick.type == 2) {
-                            if(diff_h + 0.3*brick.width < 0 || diff_v + 0.3*brick.height < 0)
-                            { obj_holl = brick }
-                        }
+                    // for black hole
+                    if(brick.type == 2) {
+                        // copy object if sufficient
+                        if(diff_h + 0.3*brick.width < 0 || diff_v + 0.3*brick.height < 0)
+                        { obj_holl = brick }
                     }
                 }
             }
-        //}
+        }
 
+        // no collision
         if(dent_hor==0 && dent_ver==0) return false;
 
+        // velocity
         var dx = x1-x0
         var dy = y1-y0
 
+        // interracion with black hole
         if(obj_holl) {
             hollExit(obj_holl, dx, dy)
             return true
         }
 
-        //console.log(dent_hor, dent_ver)
-
+        // correct position and velocity
         if(dent_ver + diam == 0 || dent_ver < 2*dent_hor) {
             new_x = x0
             new_y = y1
             new_vx = -dx
-            new_vy = dy
-            //console.log("horizontal")
+            new_vy = dy            
         } else if(dent_hor + diam == 0 || dent_hor < 2*dent_ver) {
             new_x = x1
             new_y = y0
             new_vx = dx
-            new_vy = -dy
-            //console.log("vertical")
+            new_vy = -dy            
         }
         else {
             new_x = x0
             new_y = y0
             new_vx = -dx
-            new_vy = -dy
-            //console.log("combined")
+            new_vy = -dy            
         }
 
+        // reduce velocity after rebound
         if(new_vx != 0) { new_vx = (new_vx / Math.abs(new_vx)) * (Math.floor(Math.abs(new_vx)/1.5)) }
         if(new_vy != 0) { new_vy = (new_vy) / Math.abs(new_vy) * (Math.floor(Math.abs(new_vy)/1.5)) }
 
+        // for spring amplify it
         if(get_spring) {
             new_vx *= 3
             new_vy *= 3
@@ -178,23 +195,24 @@ Item {
         return true;
     }
 
+    // black holl teleportation
     function hollExit(holl, dx, dy) {
-        var exit = holl
 
+        // get exit
+        var exit = holl
         while(exit == holl) {
             var n = Math.floor(Math.random() * holls.length)
             exit = holls[n]
-            console.log(n)
         }
 
+        // coordinates
         var exit_x = Math.floor(exit.x + exit.width/2)
         var exit_y = Math.floor(exit.y + exit.height/2)
 
         var col = Math.floor(exit.x / exit.width)
         var row = Math.floor(exit.y / exit.height)
 
-        console.log(col, row)
-
+        // find free cell
         var i, j
         for(var k = 0; k < steps.length; k++) {
             i = col + steps[k][0]
@@ -203,22 +221,18 @@ Item {
             if(!(i < 0 || i >= horizontalBricks || j < 0 || j >= verticalBricks || bricks[j][i])) break;
         }
 
+        // new ball position
+        var ball_x = Math.floor((i+0.5)*brickWidth)
+        var ball_y = Math.floor((j+0.5)*brickHeight)
 
-        console.log(i,j)
-
-        var ball_x = Math.floor((i+0.5)*exit.width)
-        var ball_y = Math.floor((j+0.5)*exit.height)
-
-        var dv = Math.sqrt(dx*dx+dy*dy)
+        // new velocity
+        var dv = Math.sqrt(dx*dx+dy*dy)*1.5
         var hyp = Math.sqrt((exit_x-ball_x)*(exit_x-ball_x) + (exit_y-ball_y)*(exit_y-ball_y));
 
         new_x = ball_x
         new_y = ball_y
         new_vx = Math.floor(dv*(ball_x-exit_x)/hyp)
         new_vy = Math.floor(dv*(ball_y-exit_y)/hyp)
-
-        console.log(new_x, new_y, new_vx, new_vy)
-
     }
 
 }
