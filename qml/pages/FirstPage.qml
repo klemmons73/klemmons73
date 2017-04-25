@@ -78,7 +78,7 @@ Page {
             id: countDown
 
             Component.onCompleted: {
-                countDown.start(90)
+                countDown.start(3610)
             }
         }
     }

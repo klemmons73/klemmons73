@@ -35,9 +35,9 @@ CoverBackground {
     Label {
         id: label
         anchors.centerIn: parent
-        text: qsTr("My Cover")
+        text: qsTr("Maze Runner")
     }
-
+/*
     CoverActionList {
         id: coverAction
 
@@ -49,5 +49,6 @@ CoverBackground {
             iconSource: "image://theme/icon-cover-pause"
         }
     }
+*/
 }
 

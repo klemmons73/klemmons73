@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtSensors 5.0
 
 Item {
     id: b
@@ -24,6 +25,17 @@ Item {
         width: parent.diametr
         height: parent.diametr
     }
+
+    RotationSensor {
+        id: rotation
+        active: true
+
+
+    }
+
+
+
+
 
     Keys.onPressed: {
 
@@ -95,6 +107,7 @@ Item {
     }
 
     function speedUpdate() {
+        rotationUpdate()
         if(rightPressed) { xVelocity = Math.min(xVelocity+acceleration, speedLimit) }
         if(leftPressed) { xVelocity = Math.max(xVelocity-acceleration, -speedLimit) }
         if(upPressed) { yVelocity = Math.max(yVelocity-acceleration, -speedLimit) }
@@ -113,6 +126,13 @@ Item {
             else
                 yVelocity -= acceleration
         }
+    }
+
+    function rotationUpdate() {
+        upPressed = (rotation.reading.x > 10)
+        downPressed = (rotation.reading.x < -10)
+        leftPressed = (rotation.reading.y > 10)
+        rightPressed = (rotation.reading.y < -10)
     }
 
 
