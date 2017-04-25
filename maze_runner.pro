@@ -45,4 +45,5 @@ DISTFILES += \
     qml/pages/Ball.qml \
     qml/pages/ball.png \
     qml/pages/hole.png \
-    qml/pages/spring.png
+    qml/pages/spring.png \
+    qml/pages/CountDown.qml

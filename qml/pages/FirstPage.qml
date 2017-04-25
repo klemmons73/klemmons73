@@ -37,6 +37,7 @@ Page {
 
     property int brickSize: 50
 
+
     Item {
         id: board
         anchors.fill: parent
@@ -73,6 +74,13 @@ Page {
             focus: true
         }
 
+        CountDown {
+            id: countDown
+
+            Component.onCompleted: {
+                countDown.start(90)
+            }
+        }
     }
 }
 
