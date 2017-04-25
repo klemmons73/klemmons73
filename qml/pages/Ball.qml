@@ -29,13 +29,7 @@ Item {
     RotationSensor {
         id: rotation
         active: true
-
-
     }
-
-
-
-
 
     Keys.onPressed: {
 

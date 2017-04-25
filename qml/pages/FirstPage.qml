@@ -57,11 +57,12 @@ Page {
 
             Component.onCompleted: {
                 generateWalls()
-                addHolls(3)
-                addSprings(2)
+                generateMaze()
+                addHolls()
+                addSprings()
             }
         }
-
+/*
         Ball {
             id: ball
 
@@ -73,7 +74,7 @@ Page {
 
             focus: true
         }
-
+*/
         CountDown {
             id: countDown
 

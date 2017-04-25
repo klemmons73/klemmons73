@@ -23,6 +23,7 @@ Item {
     property var steps: [[-1,0],[0,-1],[1,0],[0,1],[-1,-1],[1,-1],[1,1],[-1,1]]
 
 
+    property int brickNumber: 0
     property var bricks: []
     property var holls:  []
 
@@ -53,13 +54,15 @@ Item {
 
                     brick.setType(1)
                     bricks[row][col] = brick
+                    brickNumber ++
                 }
             }
         }
     }
 
     // black holls generation
-    function addHolls(amount) {
+    function addHolls() {
+        var amount = Math.floor(0.1 * brickNumber)
         while(amount > 0) {
             while(true) {
                 var col = Math.floor(Math.random() * horizontalBricks)
@@ -77,7 +80,8 @@ Item {
     }
 
     // springs generation
-    function addSprings(amount) {
+    function addSprings() {
+        var amount = Math.floor(0.1 * brickNumber)
         while(amount > 0) {
             while(true) {
                 var col = Math.floor(Math.random() * horizontalBricks)
@@ -235,4 +239,77 @@ Item {
         new_vy = Math.floor(dv*(ball_y-exit_y)/hyp)
     }
 
+    function generateMaze() {
+
+        var field = []
+        var stack = []
+
+        var width = horizontalBricks-2-(horizontalBricks % 2 == 0 ? 1 : 0)
+        var height = verticalBricks-2-(verticalBricks % 2 == 0 ? 1 : 0)
+
+        // initialize grid
+        for(var j = 0; j < height; j++) {
+            field[j] = []
+            for(var i = 0; i < width; i++) {
+                field[j][i] = (i % 2 == 0 && j % 2 == 0) ? 0 : -1
+            }
+        }
+
+        // generate
+        var current = [0,0]
+        field[0][0] = 1 // visited
+        var notAll = true
+        var dirs = [[-2,0],[2,0],[0,-2],[0,2]]
+
+        while(notAll) {
+            notAll = false
+            field[current[0]][current[1]] = 1
+
+            var start = Math.floor(Math.random() * dirs.length) // randomize first index
+
+            for(var k = 0; k < dirs.length; k++) {
+                var v = (start+k) % dirs.length
+                var next = [current[0] + dirs[v][0], current[1] + dirs[v][1]]
+                if(next[0] >= 0 && next[0] < height && next[1] >= 0 && next[1] < width && field[next[0]][next[1]] == 0) {
+                    notAll = true
+
+                    // remove wall
+                    if(current[0] == next[0])
+                        field[current[0]][(current[1]+next[1])/2] = 1
+                    else
+                        field[(current[0]+next[0])/2][current[1]] = 1
+
+                    // remember it
+                    stack.push(current)
+
+                    current = next                    
+                    break;
+                }
+            }
+
+            if(!notAll && stack.length > 0) {                
+                current = stack.pop()                
+                notAll = true
+            }
+
+        }
+
+        // save
+        var component = Qt.createComponent("Brick.qml")
+
+        for(var col = 0; col < width; col++) {
+            for(var row = 0; row < height; row++) {
+                if(field[row][col] == -1) {
+                    var x = (col+1)*brickWidth
+                    var y = (row+1)*brickHeight
+
+                    var brick = component.createObject(gameBoard, {"x":x, "y":y, "width":brickWidth, "height":brickHeight});
+
+                    brick.setType(1)
+                    bricks[row][col] = brick
+                    brickNumber ++
+                }
+            }
+        }
+    }
 }
