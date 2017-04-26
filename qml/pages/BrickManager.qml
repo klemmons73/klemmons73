@@ -27,6 +27,10 @@ Item {
     property var bricks: []
     property var holls:  []
 
+    property var finish: []
+    property var finishStar: null
+    //property var starComponent: null
+
     // external walls and main parameters
     function generateWalls() {
         // define number of bricks and its size
@@ -62,14 +66,14 @@ Item {
 
     // black holls generation
     function addHolls() {
-        var amount = Math.floor(0.1 * brickNumber)
+        var amount = Math.floor(0.05 * brickNumber)
         while(amount > 0) {
             while(true) {
                 var col = Math.floor(Math.random() * horizontalBricks)
                 var row = Math.floor(Math.random() * verticalBricks)
                 var brick = bricks[row][col]
 
-                if(brick && brick.type == 1) {
+                if(brick && brick.type == 1 && !isAngle(col, row)) {
                     brick.setType(2)
                     holls.push(brick) // list of all holls
                     break;
@@ -81,20 +85,24 @@ Item {
 
     // springs generation
     function addSprings() {
-        var amount = Math.floor(0.1 * brickNumber)
+        var amount = Math.floor(0.05 * brickNumber)
         while(amount > 0) {
             while(true) {
                 var col = Math.floor(Math.random() * horizontalBricks)
                 var row = Math.floor(Math.random() * verticalBricks)
                 var brick = bricks[row][col]
 
-                if(brick && brick.type == 1) {
+                if(brick && brick.type == 1 && !isAngle(col, row)) {
                     brick.setType(3)
                     break;
                 }
             }
             amount--
         }
+    }
+
+    function isAngle(c,r) {
+        return (c == 0 && r == 0) || (c == 0 && r == verticalBricks-1) || (c == horizontalBricks-1 && r == 0) || (c == horizontalBricks-1 && r == verticalBricks-1)
     }
 
     // collision checking
@@ -241,6 +249,8 @@ Item {
 
     function generateMaze() {
 
+        //starComponent = Qt.createComponent("FinishStar.qml")
+
         var field = []
         var stack = []
 
@@ -260,10 +270,11 @@ Item {
         field[0][0] = 1 // visited
         var notAll = true
         var dirs = [[-2,0],[2,0],[0,-2],[0,2]]
+        var path = 1
 
         while(notAll) {
             notAll = false
-            field[current[0]][current[1]] = 1
+            field[current[0]][current[1]] = path
 
             var start = Math.floor(Math.random() * dirs.length) // randomize first index
 
@@ -275,14 +286,14 @@ Item {
 
                     // remove wall
                     if(current[0] == next[0])
-                        field[current[0]][(current[1]+next[1])/2] = 1
+                        field[current[0]][(current[1]+next[1])/2] = path
                     else
-                        field[(current[0]+next[0])/2][current[1]] = 1
+                        field[(current[0]+next[0])/2][current[1]] = path
 
                     // remember it
                     stack.push(current)
-
-                    current = next                    
+                    current = next
+                    path ++
                     break;
                 }
             }
@@ -290,6 +301,7 @@ Item {
             if(!notAll && stack.length > 0) {                
                 current = stack.pop()                
                 notAll = true
+                path = field[current[0]][current[1]]
             }
 
         }
@@ -310,6 +322,34 @@ Item {
                     brickNumber ++
                 }
             }
+        }
+
+        // get longest path
+        var m_path = 0
+        var m_x = 0, m_y = 0
+
+        for(var px = 0; px < height; px++) {
+            for(var py = 0; py < width; py++) {
+                if(field[px][py] > m_path) {
+                    m_x = px
+                    m_y = py
+                    m_path = field[px][py]
+                }
+            }
+        }
+        console.log(m_x, m_y)
+        finish = [m_x+1, m_y+1]
+    }
+
+    function setupFinish() {
+        var component = Qt.createComponent("FinishStar.qml")
+        if(finish) {
+            var width = brickWidth * 0.9
+            var height = brickHeight * 0.9
+            var x = finish[1] * brickWidth + (brickWidth-width)*0.5
+            var y = finish[0] * brickHeight + (brickHeight-height)*0.5
+
+            finishStar = component.createObject(gameBoard, {"x":x, "y":y, "width":width, "height":height})
         }
     }
 }

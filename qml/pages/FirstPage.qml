@@ -35,7 +35,7 @@ import Sailfish.Silica 1.0
 Page {
     id: page
 
-    property int brickSize: 50
+    property int brickSize: 60
 
 
     Item {
@@ -60,21 +60,22 @@ Page {
                 generateMaze()
                 addHolls()
                 addSprings()
+                setupFinish()
             }
         }
-/*
+
         Ball {
             id: ball
 
             bricks: brickManager
-            diametr: Math.floor(0.8*page.brickSize)
+            diametr: Math.floor(0.7*page.brickSize)
 
-            x: parent.width / 2
-            y: parent.height / 2
+            x: page.brickSize + ball.diametr/4
+            y: page.brickSize + ball.diametr/4
 
             focus: true
         }
-*/
+
         CountDown {
             id: countDown
 

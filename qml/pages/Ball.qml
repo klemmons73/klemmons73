@@ -101,7 +101,7 @@ Item {
     }
 
     function speedUpdate() {
-        rotationUpdate()
+        //rotationUpdate()
         if(rightPressed) { xVelocity = Math.min(xVelocity+acceleration, speedLimit) }
         if(leftPressed) { xVelocity = Math.max(xVelocity-acceleration, -speedLimit) }
         if(upPressed) { yVelocity = Math.max(yVelocity-acceleration, -speedLimit) }
