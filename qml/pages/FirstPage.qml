@@ -37,6 +37,8 @@ Page {
 
     property int brickSize: 60
 
+    property bool finished: brickManager.finished
+    property bool timeOut: countDown.timeOut
 
     Item {
         id: board
@@ -79,9 +81,25 @@ Page {
         CountDown {
             id: countDown
 
+            anchors.horizontalCenter: parent.horizontalCenter
+
             Component.onCompleted: {
-                countDown.start(3610)
+                countDown.start(10)
             }
+        }
+    }
+
+    onFinishedChanged: {
+        if(page.finished) {
+            main.msg = "You Win! :)"
+            pageStack.push(Qt.resolvedUrl("SecondPage.qml"))
+        }
+    }
+
+    onTimeOutChanged: {
+        if(page.timeOut) {
+            main.msg = "You lose.. (:"
+            pageStack.push(Qt.resolvedUrl("SecondPage.qml"))
         }
     }
 }

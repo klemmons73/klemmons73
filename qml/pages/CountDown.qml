@@ -3,6 +3,7 @@ import QtQuick 2.0
 Item {
 
     property int rest: 100
+    property bool timeOut: false
 
     z: 1
 
@@ -10,6 +11,9 @@ Item {
         id: monitor
 
         text: "0:00:00"
+        color: "white"
+        font.bold: true
+
     }
 
     Timer {
@@ -45,6 +49,7 @@ Item {
         monitor.text = timeString(rest)
         if(rest == 0) {
             timer.running = false
+            timeOut = true
         }
     }
 }

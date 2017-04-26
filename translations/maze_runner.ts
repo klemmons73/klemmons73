@@ -4,18 +4,8 @@
 <context>
     <name>CoverPage</name>
     <message>
-        <source>Maze Runner</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SecondPage</name>
-    <message>
-        <source>Nested Page</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Item</source>
+        <source> Maze
+Runner</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

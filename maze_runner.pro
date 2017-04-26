@@ -48,4 +48,5 @@ DISTFILES += \
     qml/pages/spring.png \
     qml/pages/CountDown.qml \
     qml/pages/star.png \
-    qml/pages/FinishStar.qml
+    qml/pages/FinishStar.qml \
+    qml/pages/back.png

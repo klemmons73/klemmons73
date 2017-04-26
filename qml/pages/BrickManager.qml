@@ -29,7 +29,7 @@ Item {
 
     property var finish: []
     property var finishStar: null
-    //property var starComponent: null
+    property bool finished: false
 
     // external walls and main parameters
     function generateWalls() {
@@ -107,6 +107,11 @@ Item {
 
     // collision checking
     function getCollision(x0,y0,x1,y1, diam) {
+
+        if(isFinished(x1,y1)) {
+            finished = true
+            return false
+        }
 
         var b_row = Math.floor((y0+diam/2) / brickHeight)
         var b_col = Math.floor((x0+diam/2) / brickWidth)
@@ -205,6 +210,11 @@ Item {
         }
 
         return true;
+    }
+
+    function isFinished(x,y) {
+        var dist = (x-finish[0])*(x-finish[0])+(y-finish[1])*(y-finish[1])
+        return dist < (brickWidth*brickHeight*0.25)
     }
 
     // black holl teleportation
@@ -350,6 +360,7 @@ Item {
             var y = finish[0] * brickHeight + (brickHeight-height)*0.5
 
             finishStar = component.createObject(gameBoard, {"x":x, "y":y, "width":width, "height":height})
+            finish = [x,y]
         }
     }
 }
