@@ -35,73 +35,44 @@ import Sailfish.Silica 1.0
 Page {
     id: page
 
-    property int brickSize: 60
+    property bool running: main.gameRun
 
-    property bool finished: brickManager.finished
-    property bool timeOut: countDown.timeOut
+    Image {
+        source: "back.png"
 
-    Item {
-        id: board
         anchors.fill: parent
+    }
 
-        Rectangle {
-            color: "green"
-            anchors.fill: parent
 
-            z: -1
+    Column {
+        id: column
+        width: parent.width
+        y: parent.height / 3
+
+        Label {
+            text: main.msg
+
+            color: "white"
+            font.bold: true
+            font.pixelSize: Theme.fontSizeHuge
+
+            anchors.horizontalCenter: parent.horizontalCenter
+
         }
 
-        BrickManager {
-            id: brickManager
-
-            gameBoard: board
-            brickSize: page.brickSize
-
-            Component.onCompleted: {
-                generateWalls()
-                generateMaze()
-                addHolls()
-                addSprings()
-                setupFinish()
-            }
-        }
-
-        Ball {
-            id: ball
-
-            bricks: brickManager
-            diametr: Math.floor(0.7*page.brickSize)
-
-            x: page.brickSize + ball.diametr/4
-            y: page.brickSize + ball.diametr/4
-
-            focus: true
-        }
-
-        CountDown {
-            id: countDown
-
-            //anchors.horizontalCenter: parent.horizontalCenter
-            width: parent.width * 0.25
-            x: parent.width - countDown.width
-
-            Component.onCompleted: {
-                countDown.start(120)
+        Button {
+            text: qsTr("New game")
+            anchors.horizontalCenter: parent.horizontalCenter
+            onClicked: {
+                main.gameRun = true
+                pageStack.push(Qt.resolvedUrl("SecondPage.qml"))
             }
         }
     }
 
-    onFinishedChanged: {
-        if(page.finished) {
-            main.msg = "You Win! :)"
-            pageStack.push(Qt.resolvedUrl("SecondPage.qml"))
-        }
-    }
-
-    onTimeOutChanged: {
-        if(page.timeOut) {
-            main.msg = "Time out (:"
-            pageStack.push(Qt.resolvedUrl("SecondPage.qml"))
+    onRunningChanged: {
+        if(!running) {
+            pageStack.pop()
         }
     }
 }

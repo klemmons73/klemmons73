@@ -9,4 +9,11 @@ Runner</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
+<context>
+    <name>FirstPage</name>
+    <message>
+        <source>New game</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 </TS>

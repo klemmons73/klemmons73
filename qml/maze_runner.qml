@@ -36,7 +36,8 @@ ApplicationWindow
 {
     id: main
 
-    property string msg: ""
+    property string msg: "Wellcome!"
+    property bool gameRun: false
 
     initialPage: Component { FirstPage { } }
     cover: Qt.resolvedUrl("cover/CoverPage.qml")

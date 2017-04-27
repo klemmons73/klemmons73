@@ -35,22 +35,73 @@ import Sailfish.Silica 1.0
 Page {
     id: page
 
-    Image {
-        source: "back.png"
+    property int brickSize: 60
 
+    property bool finished: brickManager.finished
+    property bool timeOut: countDown.timeOut
+
+    Item {
+        id: board
         anchors.fill: parent
+
+        Rectangle {
+            color: "green"
+            anchors.fill: parent
+
+            z: -1
+        }
+
+        BrickManager {
+            id: brickManager
+
+            gameBoard: board
+            brickSize: page.brickSize
+
+            Component.onCompleted: {
+                generateWalls()
+                generateMaze()
+                addHolls()
+                addSprings()
+                setupFinish()
+            }
+        }
+
+        Ball {
+            id: ball
+
+            bricks: brickManager
+            diametr: Math.floor(0.7*page.brickSize)
+
+            x: page.brickSize + ball.diametr/4
+            y: page.brickSize + ball.diametr/4
+
+            focus: true
+        }
+
+        CountDown {
+            id: countDown
+
+            //anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width * 0.25
+            x: parent.width - countDown.width
+
+            Component.onCompleted: {
+                countDown.start(5)
+            }
+        }
     }
 
-    Text {
-        text: main.msg
-
-        color: "white"
-        font.bold: true
-        font.pixelSize: Theme.fontSizeHuge
-
-        //anchors.horizontalCenter: parent.horizontalCenter
-        //anchors.verticalCenter: parent.verticalCenter
-        anchors.centerIn: parent
+    onFinishedChanged: {
+        if(page.finished) {
+            main.msg = "You Win! :)"
+            main.gameRun = false
+        }
     }
 
+    onTimeOutChanged: {
+        if(page.timeOut) {
+            main.msg = "Time out (:"
+            main.gameRun = false
+        }
+    }
 }
