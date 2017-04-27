@@ -76,7 +76,7 @@ Item {
 
 
     Timer {
-        interval: 40
+        interval: 50
         triggeredOnStart: true
         running: true
         repeat: true
@@ -89,8 +89,7 @@ Item {
                 b.y = bricks.new_y
                 xVelocity = bricks.new_vx
                 yVelocity = bricks.new_vy
-                //console.log(xVelocity, yVelocity)
-                //console.log("collision", bricks.new_x, bricks.new_y, bricks.new_vx, bricks.new_vy)
+
             }
             else {
                 b.x += xVelocity

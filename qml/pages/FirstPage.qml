@@ -84,7 +84,7 @@ Page {
             anchors.horizontalCenter: parent.horizontalCenter
 
             Component.onCompleted: {
-                countDown.start(10)
+                countDown.start(1000)
             }
         }
     }

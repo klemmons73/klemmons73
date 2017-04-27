@@ -20,7 +20,7 @@ Item {
     property int new_vx: 0
     property int new_vy: 0
 
-    property var steps: [[-1,0],[0,-1],[1,0],[0,1],[-1,-1],[1,-1],[1,1],[-1,1]]
+    property var steps: [[-1,0], [0,-1], [1,0], [0,1], [-1,-1], [1,-1], [1,1], [-1,1]]
 
 
     property int brickNumber: 0
@@ -113,8 +113,8 @@ Item {
             return false
         }
 
-        var b_row = Math.floor((y0+diam/2) / brickHeight)
-        var b_col = Math.floor((x0+diam/2) / brickWidth)
+        var b_row = Math.floor((y0+diam*0.5) / brickHeight)
+        var b_col = Math.floor((x0+diam*0.5) / brickWidth)
 
         var b_l = x1
         var b_r = x1+diam
@@ -127,45 +127,43 @@ Item {
         var get_spring = false
         var obj_holl
 
-        for(var k = 0; k < steps.length; k++) {
-            var i = b_row + steps[k][0]
-            var j = b_col + steps[k][1]
+        steps.forEach(function (step) {
+            var i = b_row + step[0]
+            var j = b_col + step[1]
 
-            if(i < 0 || i >= verticalBricks || j < 0 || j >= horizontalBricks)  // check index
-                continue;
-
-            var brick = bricks[i][j]
+            var brick
+            if(bricks[i]) { brick = bricks[i][j] }
             if(brick) {
                 // external borders
-                var left = Math.min(b_l, brick.x);
-                var right = Math.max(b_r, brick.x+brick.width);
-                var top = Math.min(b_t, brick.y);
-                var bottom = Math.max(b_b, brick.y+brick.height);
+                var left = Math.min(b_l, j*brickWidth);
+                var right = Math.max(b_r, (j+1)*brickWidth);
+                var top = Math.min(b_t, i*brickHeight);
+                var bottom = Math.max(b_b, (i+1)*brickHeight);
 
                 // shift
-                var diff_h = right - left - brick.width - diam
-                var diff_v = bottom - top - brick.height - diam
+                var diff_h = right - left - brickWidth - diam
+                var diff_v = bottom - top - brickHeight - diam
 
                 if(diff_h < limit && diff_v < limit) {
                     // check direction of collision
-                    dent_hor += diff_h;
+                    dent_hor += diff_h;                    
                     dent_ver += diff_v;
 
                     // for spring
                     if(brick.type == 3) {
                         // mark if sufficient
-                        get_spring = (diff_h + 0.3*brick.width < 0 || diff_v + 0.3*brick.height < 0)
+                        get_spring = (diff_h + 0.3*brickWidth < 0 || diff_v + 0.3*brickHeight < 0)
                     }
 
                     // for black hole
                     if(brick.type == 2) {
                         // copy object if sufficient
-                        if(diff_h + 0.3*brick.width < 0 || diff_v + 0.3*brick.height < 0)
+                        if(diff_h + 0.3*brickWidth < 0 || diff_v + 0.3*brickHeight < 0)
                         { obj_holl = brick }
                     }
                 }
             }
-        }
+        })
 
         // no collision
         if(dent_hor==0 && dent_ver==0) return false;
@@ -328,8 +326,8 @@ Item {
                     var brick = component.createObject(gameBoard, {"x":x, "y":y, "width":brickWidth, "height":brickHeight});
 
                     brick.setType(1)
-                    bricks[row][col] = brick
-                    brickNumber ++
+                    bricks[row+1][col+1] = brick
+                    brickNumber ++                    
                 }
             }
         }
