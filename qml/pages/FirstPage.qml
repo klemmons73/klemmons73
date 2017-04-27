@@ -81,10 +81,12 @@ Page {
         CountDown {
             id: countDown
 
-            anchors.horizontalCenter: parent.horizontalCenter
+            //anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width * 0.25
+            x: parent.width - countDown.width
 
             Component.onCompleted: {
-                countDown.start(1000)
+                countDown.start(120)
             }
         }
     }
@@ -98,7 +100,7 @@ Page {
 
     onTimeOutChanged: {
         if(page.timeOut) {
-            main.msg = "You lose.. (:"
+            main.msg = "Time out (:"
             pageStack.push(Qt.resolvedUrl("SecondPage.qml"))
         }
     }

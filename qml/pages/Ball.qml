@@ -89,7 +89,6 @@ Item {
                 b.y = bricks.new_y
                 xVelocity = bricks.new_vx
                 yVelocity = bricks.new_vy
-
             }
             else {
                 b.x += xVelocity
@@ -127,7 +126,5 @@ Item {
         leftPressed = (rotation.reading.y > 10)
         rightPressed = (rotation.reading.y < -10)
     }
-
-
 
 }

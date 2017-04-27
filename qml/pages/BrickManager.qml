@@ -174,7 +174,7 @@ Item {
 
         // interracion with black hole
         if(obj_holl) {
-            hollExit(obj_holl, dx, dy)
+            hollExit(obj_holl)
             return true
         }
 
@@ -216,7 +216,7 @@ Item {
     }
 
     // black holl teleportation
-    function hollExit(holl, dx, dy) {
+    function hollExit(holl) {
 
         // get exit
         var exit = holl
@@ -225,12 +225,8 @@ Item {
             exit = holls[n]
         }
 
-        // coordinates
-        var exit_x = Math.floor(exit.x + exit.width/2)
-        var exit_y = Math.floor(exit.y + exit.height/2)
-
-        var col = Math.floor(exit.x / exit.width)
-        var row = Math.floor(exit.y / exit.height)
+        var col = Math.floor(exit.x / brickWidth)
+        var row = Math.floor(exit.y / brickHeight)
 
         // find free cell
         var i, j
@@ -242,17 +238,14 @@ Item {
         }
 
         // new ball position
-        var ball_x = Math.floor((i+0.5)*brickWidth)
-        var ball_y = Math.floor((j+0.5)*brickHeight)
-
-        // new velocity
-        var dv = Math.sqrt(dx*dx+dy*dy)*1.5
-        var hyp = Math.sqrt((exit_x-ball_x)*(exit_x-ball_x) + (exit_y-ball_y)*(exit_y-ball_y));
+        var ball_x = i*brickWidth
+        var ball_y = j*brickHeight
 
         new_x = ball_x
         new_y = ball_y
-        new_vx = Math.floor(dv*(ball_x-exit_x)/hyp)
-        new_vy = Math.floor(dv*(ball_y-exit_y)/hyp)
+
+        new_vx = 0
+        new_vy = 0
     }
 
     function generateMaze() {
@@ -345,7 +338,7 @@ Item {
                 }
             }
         }
-        console.log(m_x, m_y)
+        // the biggest path
         finish = [m_x+1, m_y+1]
     }
 
